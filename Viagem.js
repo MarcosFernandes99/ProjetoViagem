@@ -19,14 +19,25 @@ class Cliente {
         return this.#DataNascimento
     }
     DefinirNome(nome) {
+        if (nome.length > 50) {
+            console.log(`Número máximo de caracteres para Nome é 50`)
+            return
+        }
+
         this.#Nome = nome
     }
     DefinirCpf(cpf) {
+        if (cpf.length > 11) {
+            console.log(`Número máximo de caracteres para CPF é 11`)
+            return
+        }
+
         this.#Cpf = cpf
     }
     DefinirDataNascimento(data) {
         this.#DataNascimento = data
     }
+
 }
 
 class PacoteViagem {
@@ -143,7 +154,7 @@ class PassagemAerea {
 
     CalcularAcrescimo(valor) {
         let resultado
-        if (this.PrimeiraClasse) {
+        if (this.#PrimeiraClasse) {
             return resultado = valor + (valor * 0.5)
         }
         else {
@@ -152,8 +163,8 @@ class PassagemAerea {
     }
 
     ExibirResumo() {
-        console.log("Passagem em nome de: ", this.Passageiro.Nome)
-        console.log("No assento: ", this.Assento, "do voo: ", this.Voo.Numero, "com destino para: ", this.Voo.LocalDestino)
+        console.log("Passagem em nome de: ", this.#Passageiro.BuscarNome())
+        console.log("No assento: ", this.#Assento, "do voo: ", this.#Voo.BuscarNumero(), "com destino para: ", this.#Voo.BuscarLocalDestino())
     }
 
     BuscarAssento() {
@@ -175,10 +186,24 @@ class PassagemAerea {
         this.#Assento = assento
     }
     DefinirPrimeiraClasse(primeiraClasse) {
-        this.#PrimeiraClasse = primeiraClasse
+        if (primeiraClasse == true || primeiraClasse == false) {
+            this.#PrimeiraClasse = primeiraClasse
+            return
+        }
+        else {
+            console.log(`ERRO! Valor não booleano, insira outro!`)
+        }
+
     }
     DefinirValor(valor) {
-        this.#Valor = this.CalcularAcrescimo(valor)
+        if (valor > 0) {
+            this.#Valor = this.CalcularAcrescimo(valor)
+            return
+        }
+        else{
+            console.log(`ERRO! Valor menor que 0`)
+        }
+
     }
     DefinirPassageiro(passageiro) {
         this.#Passageiro = passageiro
@@ -188,14 +213,14 @@ class PassagemAerea {
     }
 }
 
-
-let pessoa = new Cliente("Marcos", "44455566688", "21/10/1994")
+let pessoa = new Cliente("Marcos", "44455544412", "21/10/1994")
+console.log(pessoa)
 
 let viagemUm = new PacoteViagem(pessoa, "14/10/2022", "25/10/2022", 3000)
 
 let vooUm = new Voo("Gol", "255", "14/10/2022", "12:30", "Congonhas", "Salvador")
 
-let passagem = new PassagemAerea("455", true, 1500, pessoa, vooUm)
+let passagem = new PassagemAerea("455", true, 50, pessoa, vooUm)
 
 passagem.ExibirResumo()
 
