@@ -218,26 +218,26 @@ class PassagemAerea {
 }
 
 let continuar = true
-do{
-let opcao = prompt(`Digite 1-Cadastrar Cliente/2-Cadastrar Voo/3-Cadastrar Pacote de Viagem`)
+do {
+    let opcao = prompt(`Digite 1-Cadastrar Cliente/2-Cadastrar Voo/3-Cadastrar Pacote de Viagem`)
 
-switch (opcao) {
-    case "1":
-        CadastrarCliente()
-        break;
-    case "2":
-        CadastrarVoo()
-        break;
-    case "3":
-        CadastrarPacoteViagem()
-        break;
-}
+    switch (opcao) {
+        case "1":
+            CadastrarCliente()
+            break;
+        case "2":
+            CadastrarVoo()
+            break;
+        case "3":
+            CadastrarPacoteViagem()
+            break;
+    }
 
-let opcaoContinuar = prompt(`1-Continuar/2-Encerrar`)
-if(opcaoContinuar != 1){
-    continuar = false
-}
-}while(continuar)
+    let opcaoContinuar = prompt(`1-Continuar/2-Encerrar`)
+    if (opcaoContinuar != 1) {
+        continuar = false
+    }
+} while (continuar)
 
 function CadastrarCliente() {
     // let nomeAd = prompt(`Qual o seu nome?`)
@@ -259,19 +259,24 @@ function CadastrarVoo() {
 
     let vooUm = new Voo("Gol", "255", "14/10/2022", "12:30", "São Paulo", "Salvador")
     voos.push(vooUm)
-    let vooDois = new Voo("Latam", "123", "20/10/2022", "16:00", "São Paulo", "Rio De Janeiro")
+    let vooDois = new Voo("Latam", "123", "20/10/2022", "16:00", "Salvador", "São Paulo")
     voos.push(vooDois)
-    let vooTrês = new Voo("Latam", "456", "05/10/2022", "20:00", "São Paulo", "Brasília")
+    let vooTrês = new Voo("Latam", "456", "05/10/2022", "20:00", "Rio De janeiro", "Brasília")
     voos.push(vooTrês)
     console.log(voos)
 }
 
 function CadastrarPacoteViagem() {
     let titular = prompt(`Qual o titular do pacote?`)
+
     voos.forEach(x => {
         console.log(x)
     })
+
     let passagemIda = prompt(`Qual a data da passagem de IDA?`)
+    
+    VerificarPassagem(passagemIda)
+
     let passagemVolta = prompt(`Qual a data da passagem de VOLTA?`)
     let valorTotal = prompt(`Qual o valor total?`)
 
@@ -279,6 +284,21 @@ function CadastrarPacoteViagem() {
     //let novoPacote = new PacoteViagem("Marcos", "05/10/2022", "15/10/2022", 3000)
     pacotesViagem.push(novoPacote)
     console.log(pacotesViagem)
+}
+
+function VerificarPassagem(passagemParametro){
+    let local
+    voos.filter(x => {
+        if(x.BuscarData() == passagemParametro){
+            local = x.BuscarLocalDestino()            
+        }
+    })
+
+    voos.forEach(x => {
+        if(x.BuscarLocalPartida() == local){
+            console.log(x)
+        }
+    })
 }
 
 //let viagemUm = new PacoteViagem(pessoa, "14/10/2022", "25/10/2022", 3000)
