@@ -1,7 +1,3 @@
-let clientes = []
-let voos = []
-let pacotesViagem = []
-
 class Cliente {
     #Nome
     #Cpf
@@ -50,11 +46,11 @@ class PacoteViagem {
     #PassagemVolta
     #ValorTotal
 
-    constructor(titular, passagemIda, passagemVolta, valorTotal) {
+    constructor(titular, passagemIda, passagemVolta) {
         this.DefinirTitular(titular)
         this.DefinirPassagemIda(passagemIda)
         this.DefinirPassagemVolta(passagemVolta)
-        this.DefinirValorTotal(valorTotal)
+        this.DefinirValorTotal(this.CalcularValorTotal())
     }
 
     BuscarTitular() {
@@ -80,6 +76,10 @@ class PacoteViagem {
     }
     DefinirValorTotal(valorTotal) {
         this.#ValorTotal = valorTotal
+    }
+
+    CalcularValorTotal(){
+        return this.#PassagemIda.BuscarValor() + this.#PassagemVolta.BuscarValor()  
     }
 
 }
@@ -201,7 +201,7 @@ class PassagemAerea {
     }
     DefinirValor(valor) {
         if (valor > 0) {
-            this.#Valor = this.CalcularAcrescimo(valor)
+            this.#Valor = valor
             return
         }
         else {
@@ -216,6 +216,10 @@ class PassagemAerea {
         this.#Voo = voo
     }
 }
+
+let clientes = []
+let voos = []
+let pacotesViagem = []
 
 let continuar = true
 do {
@@ -239,14 +243,26 @@ do {
     }
 } while (continuar)
 
+
+
 function CadastrarCliente() {
     // let nomeAd = prompt(`Qual o seu nome?`)
     // let cpfAd = prompt(`Qual o seu CPF?`)
     // let dataNascimentoAd = prompt(`Qual a sua data de nascimento?`)
 
-    let novoCliente = new Cliente("Marcos", "45555566678", "21/10/2022")
-    clientes.push(novoCliente)
-    console.log(clientes)
+    let ClienteUm = new Cliente("Marcos", "22233344455", "21/10/2022")
+    clientes.push(ClienteUm)
+    let ClienteDois = new Cliente("Junior", "11144455588", "10/10/2022")
+    clientes.push(ClienteDois)
+
+    ExibirClientes()
+   
+}
+
+function ExibirClientes(){
+    clientes.forEach((x, index) => {
+        console.log(`${index + 1} - ${x.BuscarNome()} - ${x.BuscarCpf()} - ${x.BuscarDataDeNascimento()}`)
+    })
 }
 
 function CadastrarVoo() {
@@ -263,44 +279,102 @@ function CadastrarVoo() {
     voos.push(vooDois)
     let vooTrês = new Voo("Latam", "456", "05/10/2022", "20:00", "Rio De janeiro", "Brasília")
     voos.push(vooTrês)
-    console.log(voos)
+    let vooQuatro = new Voo("Latam", "289", "15/10/2022", "10:00", "Brasília", "Rio de Janeiro")
+    voos.push(vooQuatro)
+
+    ExibirVoos()
 }
 
-function CadastrarPacoteViagem() {
-    let titular = prompt(`Qual o titular do pacote?`)
-
-    voos.forEach(x => {
-        console.log(x)
+function ExibirVoos(){
+    voos.forEach((x, index) => {
+        console.log(`${index + 1 } - ${x.BuscarEmpresa()} - ${x.BuscarNumero()} - ${x.BuscarData()} - ${x.BuscarHorario()} - ${x.BuscarLocalPartida()} - ${x.BuscarLocalDestino()}`)
     })
-
-    let passagemIda = prompt(`Qual a data da passagem de IDA?`)
-    
-    VerificarPassagem(passagemIda)
-
-    let passagemVolta = prompt(`Qual a data da passagem de VOLTA?`)
-    let valorTotal = prompt(`Qual o valor total?`)
-
-    let novoPacote = new PacoteViagem(titular, passagemIda, passagemVolta, valorTotal)
-    //let novoPacote = new PacoteViagem("Marcos", "05/10/2022", "15/10/2022", 3000)
-    pacotesViagem.push(novoPacote)
-    console.log(pacotesViagem)
 }
 
-function VerificarPassagem(passagemParametro){
-    let local
-    voos.filter(x => {
-        if(x.BuscarData() == passagemParametro){
-            local = x.BuscarLocalDestino()            
+function CadastrarPacoteViagem(){
+    ExibirClientes()
+    let nomeCliente = prompt(`Qual o nome do usuário?`)
+    let cliente = clientes.find(x => x.BuscarNome() == nomeCliente)
+    let passagemIda = CadastrarPassagemIda(cliente)
+    let passagemVolta = CadastrarPassagemVolta(passagemIda)     
+    pacotesViagem.push(new PacoteViagem(cliente, passagemIda, passagemVolta))
+
+}
+
+function CadastrarPassagemIda(passageiro){
+    ExibirVoos()
+    let numeroVoo = prompt(`Qual o número do voo de ida?`)
+    let voo = voos.find(x => x.BuscarNumero() == numeroVoo)
+
+    let primeiraClasse = prompt(`Vai de primeira classe? Digite 1 para SIM e 2 para NÃO!`)
+    if(primeiraClasse == "1"){
+        primeiraClasse = true
+    }
+    else{
+        primeiraClasse = false
+    }
+
+    let valor = parseFloat(prompt(`Qual o valor?`))
+
+    let poltrona = SolicitarPoltrona(voo.BuscarNumero())
+
+    return new PassagemAerea(poltrona, primeiraClasse, valor, passageiro, voo)
+
+}
+
+function CadastrarPassagemVolta(passagemIda){
+    let passageiro = passagemIda.BuscarPassageiro()
+
+    ExibirVoosDeVolta(passagemIda.BuscarVoo().BuscarLocalDestino())
+    let numeroVoo = prompt(`Qual o número do voo de volta?`)
+    let voo = voos.find(x => x.BuscarNumero() == numeroVoo)
+
+    let primeiraClasse = prompt(`Vai de primeira classe? Digite 1 para SIM e 2 para NÃO!`)
+    if(primeiraClasse == "1"){
+        primeiraClasse = true
+    }
+    else{
+        primeiraClasse = false
+    }
+
+    let valor = parseFloat(prompt(`Qual o valor?`))
+
+    let poltrona = SolicitarPoltrona(voo.BuscarNumero())
+
+    return new PassagemAerea(poltrona, primeiraClasse, valor, passageiro, voo)
+}
+
+function ExibirVoosDeVolta(localDestino){
+    voos.forEach((x, index) => {
+        if(x.BuscarLocalPartida() == localDestino){
+            console.log(`${index + 1} - ${x.BuscarEmpresa()} - ${x.BuscarNumero()} - ${x.BuscarData()} - ${x.BuscarHorario()} - ${x.BuscarLocalPartida()} - ${x.BuscarLocalDestino()}`)
         }
     })
-
-    voos.forEach(x => {
-        if(x.BuscarLocalPartida() == local){
-            console.log(x)
-        }
-    })
 }
 
-//let viagemUm = new PacoteViagem(pessoa, "14/10/2022", "25/10/2022", 3000)
-//let passagem = new PassagemAerea("455", true, 50, pessoa, vooUm)
-//passagem.ExibirResumo()
+function SolicitarPoltrona(numeroVoo){
+    let ocupado = false
+    do{
+    ocupado = false
+        let numeroAssento = prompt(`Qual o numero da poltrona?`)
+        pacotesViagem.forEach(x => {
+            if(x.BuscarPassagemIda(). BuscarVoo().BuscarNumero() == numeroVoo){
+                if(x.BuscarPassagemIda().BuscarAssento() == numeroAssento){
+                    ocupado = true
+                }
+            }
+        })
+        pacotesViagem.forEach(x => {
+            if(x.BuscarPassagemVolta(). BuscarVoo().BuscarNumero() == numeroVoo){
+                if(x.BuscarPassagemVolta().BuscarAssento() == numeroAssento){
+                    ocupado = true
+                }
+            }
+        })
+            if(!ocupado){
+                return numeroAssento
+            }
+
+        console.log(`Poltrona ocupada!`)
+}while(true)
+}
